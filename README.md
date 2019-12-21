@@ -43,7 +43,7 @@ yarn run start(npm run start)
     required: true,
   },
   owner: {
-    User,
+    type: User,
     required: true,
   },
   likes: {

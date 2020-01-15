@@ -95,6 +95,21 @@ DELETE /cards/:id/likes
     minlength: 2,
     maxlength: 30,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8,
+    maxlength: 30,
+  },
+  salt: {
+    type: String,
+    required: true,
+  },
   about: {
     type: String,
     required: true,

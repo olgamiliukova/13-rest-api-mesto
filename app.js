@@ -2,13 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('./env');
 const controllers = require('./controllers');
+const middlewares = require('./middlewares');
 const models = require('./models');
 const routes = require('./routes');
-const middlewars = require('./uses');
 
 // Create and extend application
 const app = routes(
-  middlewars(
+  middlewares(
     controllers(
       models(
         dotenv(

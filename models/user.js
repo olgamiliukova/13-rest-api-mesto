@@ -25,11 +25,13 @@ const userSchema = new Schema({
     required: true,
     minlength: 8,
     maxlength: 30,
+    select: false,
   },
   salt: {
     type: String,
     required: true,
     default: bcrypt.genSaltSync(),
+    select: false,
   },
   about: {
     type: String,
@@ -54,6 +56,8 @@ userSchema.pre('save', function (next) {
 // eslint-disable-next-line func-names
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email })
+    .select('+password')
+    .select('+salt')
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('Incorrect email or password'));

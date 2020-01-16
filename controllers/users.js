@@ -32,6 +32,38 @@ class UsersController extends ItemsController {
       });
   }
 
+  updateUser(req, res) {
+    const { id } = req.params;
+
+    if (req.user._id !== id) {
+      return ItemsController._send(
+        // eslint-disable-next-line prefer-promise-reject-errors
+        Promise.reject(() => res.status(403).send({
+          message: 'Operation "Update" is not permitted',
+        })),
+        res,
+      );
+    }
+
+    return this.updateItem(req, res);
+  }
+
+  deleteUser(req, res) {
+    const { id } = req.params;
+
+    if (req.user._id !== id) {
+      return ItemsController._send(
+        // eslint-disable-next-line prefer-promise-reject-errors
+        Promise.reject(() => res.status(403).send({
+          message: 'Operation "Delete" is not permitted',
+        })),
+        res,
+      );
+    }
+
+    return this.deleteItem(req, res);
+  }
+
   getMe(req, res) {
     const { _id } = req.user;
 

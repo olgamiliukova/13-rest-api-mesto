@@ -8,7 +8,7 @@ module.exports = (app) => {
   router.get('/:id', cards.getItem.bind(cards));
   router.post('/', cards.createCard.bind(cards));
   router.put('/:id', cards.updateItem.bind(cards));
-  router.delete('/:id', cards.deleteItem.bind(cards));
+  router.delete('/:id', cards.deleteCard.bind(cards));
   router.put('/:id/likes', cards.likeCard.bind(cards));
   router.delete('/:id/likes', cards.dislikeCard.bind(cards));
 

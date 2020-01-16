@@ -9,8 +9,8 @@ module.exports = (app) => {
   router.get('/:id', users.getItem.bind(users));
   router.post('/', users.createItem.bind(users));
   router.patch('/me', users.updateMe.bind(users));
-  router.put('/:id', users.updateItem.bind(users));
-  router.delete('/:id', users.deleteItem.bind(users));
+  router.put('/:id', users.updateUser.bind(users));
+  router.delete('/:id', users.deleteUser.bind(users));
 
   return router;
 };

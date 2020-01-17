@@ -43,6 +43,13 @@ npm run dev
 # or yarn
 yarn run dev
 ```
+## Linting
+```
+# npm
+npm run eslint
+# or yarn
+yarn run eslint
+```
 ## Production
 ```
 # npm

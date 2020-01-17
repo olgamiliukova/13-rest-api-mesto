@@ -16,8 +16,8 @@ const userSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    validate(v) {
-      return validator.isEmail(v);
+    validate(value) {
+      return validator.isEmail(value);
     },
   },
   password: {
@@ -30,7 +30,7 @@ const userSchema = new Schema({
   salt: {
     type: String,
     required: true,
-    default: bcrypt.genSaltSync(),
+    default: () => bcrypt.genSaltSync(),
     select: false,
   },
   about: {
@@ -41,8 +41,8 @@ const userSchema = new Schema({
   },
   avatar: {
     type: String,
-    validate(v) {
-      return validUrl.isWebUri(v);
+    validate(value) {
+      return validUrl.isWebUri(value);
     },
     required: true,
   },

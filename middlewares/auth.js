@@ -4,7 +4,7 @@ module.exports = (app) => {
   // required is to add signup/signin routes before authorization middleware
   const { users } = app.get('controllers');
 
-  app.post('/signup', users.createItem.bind(users));
+  app.post('/signup', users.createUser.bind(users));
   app.post('/signin', users.login.bind(users));
 
   // eslint-disable-next-line consistent-return

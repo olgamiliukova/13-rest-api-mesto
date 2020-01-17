@@ -1,3 +1,4 @@
+const { errors } = require('../helpers');
 /* eslint-disable no-underscore-dangle */
 module.exports = class ItemsController {
   constructor(model, joins = []) {
@@ -5,18 +6,17 @@ module.exports = class ItemsController {
     this.joins = joins;
   }
 
-  static _send(promise, res) {
+  _send(promise, res) {
     return promise
       .then(
-        // eslint-disable-next-line prefer-promise-reject-errors
-        (result) => (result ? res.send(result) : Promise.reject(() => res.status(404).send({
-          message: 'Not Found',
-        }))),
+        (result) => (result ? res.send(result) : Promise.reject(
+          res.status(404).send({
+            message: `${this.model.modelName}(s) is not found`,
+          }),
+        )),
       )
       .catch(
-        (err) => (typeof err === 'function' ? err.call() : res.status(500).send({
-          message: err.message,
-        })),
+        (err) => errors(err, res),
       );
   }
 
@@ -36,7 +36,7 @@ module.exports = class ItemsController {
   }
 
   getItems(req, res) {
-    return ItemsController._send(
+    return this._send(
       this._join(
         this.model.find({}),
       ),
@@ -47,7 +47,7 @@ module.exports = class ItemsController {
   getItem(req, res) {
     const { id } = req.params;
 
-    return ItemsController._send(
+    return this._send(
       this._join(
         this.model.findById(id),
       ),
@@ -56,7 +56,7 @@ module.exports = class ItemsController {
   }
 
   createItem(req, res) {
-    return ItemsController._send(
+    return this._send(
       this.model.create(this._data(req.body)),
       res,
     );
@@ -65,9 +65,13 @@ module.exports = class ItemsController {
   updateItem(req, res) {
     const { id } = req.params;
 
-    return ItemsController._send(
+    return this._send(
       this._join(
-        this.model.findByIdAndUpdate(id, this._data(req.body), { new: true }),
+        this.model.findByIdAndUpdate(
+          id,
+          this._data(req.body),
+          { new: true },
+        ),
       ),
       res,
     );
@@ -76,7 +80,7 @@ module.exports = class ItemsController {
   deleteItem(req, res) {
     const { id } = req.params;
 
-    return ItemsController._send(
+    return this._send(
       this._join(
         this.model.findByIdAndDelete(id),
       ),

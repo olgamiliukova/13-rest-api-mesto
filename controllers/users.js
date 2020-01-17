@@ -1,10 +1,25 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable arrow-body-style */
 const jwt = require('jsonwebtoken');
+const validator = require('validator');
+
 const ItemsController = require('./items');
+const { errors } = require('../helpers');
 /* eslint-disable no-underscore-dangle */
 class UsersController extends ItemsController {
   login(req, res) {
     const { email, password } = req.body;
+
+    if (!validator.isEmail(email)) {
+      return this._send(
+        Promise.reject(
+          res.status(412).send({
+            message: 'Validation: Field email is not correct',
+          }),
+        ),
+        res,
+      );
+    }
 
     return this.model.findUserByCredentials(email, password)
       .then((user) => {
@@ -32,15 +47,65 @@ class UsersController extends ItemsController {
       });
   }
 
+  createUser(req, res) {
+    const { email } = this._data(req.body);
+
+    if (!email) {
+      return this._send(
+        Promise.reject(
+          res.status(412).send({
+            message: 'Field email is required',
+          }),
+        ),
+        res,
+      );
+    }
+
+    if (!validator.isEmail(email)) {
+      return this._send(
+        Promise.reject(
+          res.status(412).send({
+            message: 'Validation: Field email is not correct',
+          }),
+        ),
+        res,
+      );
+    }
+
+    return this.model.exists({ email })
+      .then(
+        (isExists) => {
+          return isExists ? this._send(
+            Promise.reject(
+              res.status(400).send({
+                message: `User with email "${email}" already exists`,
+              }),
+            ),
+            res,
+          ) : this._send(
+            this.model.create(this._data(req.body))
+              .then(
+                ({ _id }) => this.model.findById(_id),
+              ),
+            res,
+          );
+        },
+      )
+      .catch(
+        (err) => errors(err, res),
+      );
+  }
+
   updateUser(req, res) {
     const { id } = req.params;
 
     if (req.user._id !== id) {
-      return ItemsController._send(
-        // eslint-disable-next-line prefer-promise-reject-errors
-        Promise.reject(() => res.status(403).send({
-          message: 'Operation "Update" is not permitted',
-        })),
+      return this._send(
+        Promise.reject(
+          res.status(403).send({
+            message: 'Operation "Update" is not permitted',
+          }),
+        ),
         res,
       );
     }
@@ -52,11 +117,12 @@ class UsersController extends ItemsController {
     const { id } = req.params;
 
     if (req.user._id !== id) {
-      return ItemsController._send(
-        // eslint-disable-next-line prefer-promise-reject-errors
-        Promise.reject(() => res.status(403).send({
-          message: 'Operation "Delete" is not permitted',
-        })),
+      return this._send(
+        Promise.reject(
+          res.status(403).send({
+            message: 'Operation "Delete" is not permitted',
+          }),
+        ),
         res,
       );
     }
@@ -67,7 +133,7 @@ class UsersController extends ItemsController {
   getMe(req, res) {
     const { _id } = req.user;
 
-    return ItemsController._send(
+    return this._send(
       this._join(
         this.model.findById(_id),
       ),
@@ -78,9 +144,13 @@ class UsersController extends ItemsController {
   updateMe(req, res) {
     const { _id } = req.user;
 
-    return ItemsController._send(
+    return this._send(
       this._join(
-        this.model.findByIdAndUpdate(_id, this._data(req.body), { new: true }),
+        this.model.findByIdAndUpdate(
+          _id,
+          this._data(req.body),
+          { new: true },
+        ),
       ),
       res,
     );

@@ -70,7 +70,10 @@ module.exports = class ItemsController {
         this.model.findByIdAndUpdate(
           id,
           this._data(req.body),
-          { new: true },
+          {
+            new: true,
+            runValidators: true,
+          },
         ),
       ),
       res,

@@ -13,7 +13,7 @@ class UsersController extends ItemsController {
     if (!validator.isEmail(email)) {
       return this._send(
         Promise.reject(
-          res.status(412).send({
+          res.status(400).send({
             message: 'Validation: Field email is not correct',
           }),
         ),
@@ -53,19 +53,8 @@ class UsersController extends ItemsController {
     if (!email) {
       return this._send(
         Promise.reject(
-          res.status(412).send({
+          res.status(400).send({
             message: 'Field email is required',
-          }),
-        ),
-        res,
-      );
-    }
-
-    if (!validator.isEmail(email)) {
-      return this._send(
-        Promise.reject(
-          res.status(412).send({
-            message: 'Validation: Field email is not correct',
           }),
         ),
         res,
@@ -149,7 +138,10 @@ class UsersController extends ItemsController {
         this.model.findByIdAndUpdate(
           _id,
           this._data(req.body),
-          { new: true },
+          {
+            new: true,
+            runValidators: true,
+          },
         ),
       ),
       res,

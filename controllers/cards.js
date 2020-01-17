@@ -25,7 +25,7 @@ class CardsController extends ItemsController {
         if (!card.owner) {
           return this._send(
             Promise.reject(
-              res.status(412).send({
+              res.status(400).send({
                 message: 'Field owner is required',
               }),
             ),
@@ -56,8 +56,15 @@ class CardsController extends ItemsController {
       this._join(
         this.model.findByIdAndUpdate(
           req.params.id,
-          { $addToSet: { likes: req.user._id } },
-          { new: true },
+          {
+            $addToSet: {
+              likes: req.user._id,
+            },
+          },
+          {
+            new: true,
+            runValidators: true,
+          },
         ),
       ),
       res,
@@ -69,8 +76,15 @@ class CardsController extends ItemsController {
       this._join(
         this.model.findByIdAndUpdate(
           req.params.id,
-          { $pull: { likes: req.user._id } },
-          { new: true },
+          {
+            $pull: {
+              likes: req.user._id,
+            },
+          },
+          {
+            new: true,
+            runValidators: true,
+          },
         ),
       ),
       res,

@@ -16,8 +16,11 @@ const userSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    validate(value) {
-      return validator.isEmail(value);
+    validate: {
+      validator(value) {
+        return validator.isEmail(value);
+      },
+      message: (props) => `${props.value} is not a valid email`,
     },
   },
   password: {
@@ -41,8 +44,11 @@ const userSchema = new Schema({
   },
   avatar: {
     type: String,
-    validate(value) {
-      return validUrl.isWebUri(value);
+    validate: {
+      validator(value) {
+        return !!validUrl.isWebUri(value);
+      },
+      message: (props) => `${props.value} is not a valid uri`,
     },
     required: true,
   },
@@ -53,8 +59,7 @@ userSchema.pre('save', function (next) {
   this.password = bcrypt.hashSync([this.password, this.salt].join(), 10);
   next();
 });
-// eslint-disable-next-line func-names
-userSchema.statics.findUserByCredentials = function (email, password) {
+userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   return this.findOne({ email })
     .select('+password')
     .select('+salt')

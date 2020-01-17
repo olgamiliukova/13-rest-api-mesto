@@ -6,19 +6,19 @@ const resolvers = {
     });
   },
   validationerror(message, res) {
-    return res.status(412).send({
+    return res.status(400).send({
       message,
     });
   },
 };
 
 module.exports = (err, res) => {
-  if (err instanceof Promise || !(err instanceof Error)) {
+  if (!(err instanceof Error)) {
     return err;
   }
 
   if (!err.name || !(err.name.toLowerCase() in resolvers)) {
-    console.log(err);
+    console.error(err);
     return res.status(500).send({
       message: 'Server Error',
     });

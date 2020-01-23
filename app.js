@@ -7,17 +7,16 @@ const middlewares = require('./middlewares');
 const models = require('./models');
 const routes = require('./routes');
 
-// Create and extend application
-const app = routes(
-  middlewares(
-    controllers(
-      models(
-        dotenv(
-          express(),
-        ),
-      ),
-    ),
-  ),
+// Create and decorate application
+const app = [
+  dotenv,
+  models,
+  controllers,
+  middlewares,
+  routes,
+].reduce(
+  (decorated, decorator) => decorator(decorated),
+  express(),
 );
 
 const {

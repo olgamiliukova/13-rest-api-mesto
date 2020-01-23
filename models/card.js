@@ -16,8 +16,8 @@ const cardSchema = new Schema({
   },
   link: {
     type: String,
-    validate(v) {
-      return validUrl.isWebUri(v);
+    validate(value) {
+      return !!validUrl.isWebUri(value);
     },
     required: true,
   },

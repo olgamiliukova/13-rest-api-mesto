@@ -10,23 +10,62 @@ The latest release [https://github.com/olgamiliukova/13-rest-api-mesto/releases/
 git clone https://github.com/olgamiliukova/13-rest-api-mesto.git
 ```
 ```
-yarn install(npm install -y)
+# npm
+npm install -y
+# or yarn
+yarn install
 ```
 ## Configure .env
 ```
-cat .env.dist > .env(cp .env.dist .env)
+# cat
+cat .env.dist > .env
+# or cp
+cp .env.dist .env
+```
+## Setup secret to .env
+```
+# npm
+npm run secret
+# or yarn
+yarn run secret
 ```
 ## Setup seeds 
 ```
-yarn run seed(npm run seed)
+# npm
+npm run seed
+# or yarn
+yarn run seed
 ```
 ## Development
 ```
-yarn run dev(npm run dev)
+# npm
+npm run dev
+# or yarn
+yarn run dev
+```
+## Linting
+```
+# npm
+npm run eslint
+# or yarn
+yarn run eslint
 ```
 ## Production
 ```
-yarn run start(npm run start)
+# npm
+npm run start
+# or yarn
+yarn run start
+```
+## Authentication
+### HTTP Methods
+Signup user
+```
+POST /signup
+```
+Signin user
+```
+POST /signin
 ```
 ## API Resource "Cards"
 #### JSON Schema
@@ -94,6 +133,21 @@ DELETE /cards/:id/likes
     required: true,
     minlength: 2,
     maxlength: 30,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8,
+    maxlength: 30,
+  },
+  salt: {
+    type: String,
+    required: true,
   },
   about: {
     type: String,

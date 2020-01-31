@@ -1,9 +1,21 @@
 const dotenv = require('dotenv');
 
-const result = dotenv.config();
+let result = dotenv.config();
 
+// fallback default config if .env doesn't exist(developer mode)
 if (result.error) {
-  throw result.error;
+  result = {
+    parsed: {
+      EXPRESS_PORT: 3000,
+      MONGODB_HOST: 'localhost',
+      MONGODB_PORT: '27017',
+      MONGODB_NAME: 'mestodb',
+      MONGODB_SEED: true,
+      JWT_SECRET: 'jwt-secret',
+      // seconds, default 7d
+      JWT_EXPIRES_IN: 604800,
+    },
+  };
 }
 
 const { parsed: env } = result;

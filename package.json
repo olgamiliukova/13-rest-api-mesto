@@ -7,7 +7,7 @@
     "dev": "cross-env NODE_ENV=development nodemon -r dotenv/config app.js",
     "seed": "cross-env NODE_ENV=development node -r dotenv/config seed.js",
     "secret": "NODE_ENV=development node -e \"console.log(require('crypto').randomBytes(32).toString('hex'));\"",
-    "eslint": "NODE_ENV=development eslint --ext=.js . --ignore-path .gitignore"
+    "eslint": "cross-env NODE_ENV=development eslint --ext=.js . --ignore-path .gitignore"
   },
   "author": "Olga Miliukova",
   "license": "MIT",

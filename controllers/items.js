@@ -1,4 +1,4 @@
-const { errors } = require('../helpers');
+const { NotFoundError } = require('../errors');
 /* eslint-disable no-underscore-dangle */
 module.exports = class ItemsController {
   constructor(model, joins = []) {
@@ -7,17 +7,15 @@ module.exports = class ItemsController {
   }
 
   _send(promise, res) {
-    return promise
-      .then(
-        (result) => (result ? res.send(result) : Promise.reject(
-          res.status(404).send({
-            message: `${this.model.modelName}(s) is not found`,
-          }),
-        )),
-      )
-      .catch(
-        (err) => errors(err, res),
-      );
+    return promise.then(
+      (result) => {
+        if (!result) {
+          throw new NotFoundError(`${this.model.modelName}(s) is not found`);
+        }
+
+        return res.send(result);
+      },
+    );
   }
 
   _data(data) {
@@ -35,16 +33,17 @@ module.exports = class ItemsController {
     return promise;
   }
 
-  getItems(req, res) {
+  getItems(req, res, next) {
     return this._send(
       this._join(
         this.model.find({}),
       ),
       res,
-    );
+    )
+      .catch(next);
   }
 
-  getItem(req, res) {
+  getItem(req, res, next) {
     const { id } = req.params;
 
     return this._send(
@@ -52,17 +51,19 @@ module.exports = class ItemsController {
         this.model.findById(id),
       ),
       res,
-    );
+    )
+      .catch(next);
   }
 
-  createItem(req, res) {
+  createItem(req, res, next) {
     return this._send(
       this.model.create(this._data(req.body)),
       res,
-    );
+    )
+      .catch(next);
   }
 
-  updateItem(req, res) {
+  updateItem(req, res, next) {
     const { id } = req.params;
 
     return this._send(
@@ -77,10 +78,11 @@ module.exports = class ItemsController {
         ),
       ),
       res,
-    );
+    )
+      .catch(next);
   }
 
-  deleteItem(req, res) {
+  deleteItem(req, res, next) {
     const { id } = req.params;
 
     return this._send(
@@ -88,6 +90,7 @@ module.exports = class ItemsController {
         this.model.findByIdAndDelete(id),
       ),
       res,
-    );
+    )
+      .catch(next);
   }
 };

@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const validUrl = require('valid-url');
 const validator = require('validator');
 
+const { BadRequestError } = require('../errors');
+
 const { Schema } = mongoose;
 // User schema
 const userSchema = new Schema({
@@ -65,13 +67,13 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(email,
     .select('+salt')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Incorrect email or password'));
+        throw new BadRequestError('Incorrect email or password');
       }
 
       return bcrypt.compare([password, user.salt].join(), user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Incorrect email or password'));
+            throw new BadRequestError('Incorrect email or password');
           }
 
           return user;

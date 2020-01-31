@@ -6,7 +6,7 @@ const controllers = require('./controllers');
 const middlewares = require('./middlewares');
 const models = require('./models');
 const routes = require('./routes');
-
+const errors = require('./errors');
 // Create and decorate application
 const app = [
   dotenv,
@@ -14,6 +14,7 @@ const app = [
   controllers,
   middlewares,
   routes,
+  errors,
 ].reduce(
   (decorated, decorator) => decorator(decorated),
   express(),

@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 
+const { UnauthorizedError } = require('../errors');
+
 module.exports = (app) => {
   // required is to add signup/signin routes before authorization middleware
   const { users } = app.get('controllers');
@@ -8,16 +10,14 @@ module.exports = (app) => {
   app.post('/signin', users.login.bind(users));
 
   // eslint-disable-next-line consistent-return
-  return (req, res, next) => {
+  return (req, _, next) => {
     let { authorization } = req.headers;
 
     if (!authorization || !authorization.startsWith('Bearer ')) {
       const { jwt: token } = req.cookies;
 
       if (!token) {
-        return res
-          .status(401)
-          .send({ message: 'Authorization is required' });
+        throw new UnauthorizedError();
       }
 
       authorization = token;
@@ -28,10 +28,8 @@ module.exports = (app) => {
 
     try {
       req.user = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
-    } catch (err) {
-      return res
-        .status(401)
-        .send({ message: 'Authorization is required' });
+    } catch (e) {
+      throw new UnauthorizedError(e.message);
     }
 
     next();

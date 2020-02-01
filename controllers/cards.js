@@ -13,6 +13,24 @@ class CardsController extends ItemsController {
     return this.createItem(req, res, next);
   }
 
+  updateCard(req, res, next) {
+    const { id } = req.params;
+
+    return this._join(this.model.findById(id))
+      .then((card) => {
+        if (!card || !card.owner) {
+          throw new BadRequestError('Field owner is required');
+        }
+
+        if (req.user._id !== card.owner._id) {
+          throw new ForbiddenError('Operation "Update" is not permitted');
+        }
+
+        return this.updateItem(req, res, next);
+      })
+      .catch(next);
+  }
+
   deleteCard(req, res, next) {
     const { id } = req.params;
 
@@ -54,7 +72,7 @@ class CardsController extends ItemsController {
       .catch(next);
   }
 
-  dislikeCard(req, res, next) {
+  unlikeCard(req, res, next) {
     const { id } = req.params;
 
     return this._send(

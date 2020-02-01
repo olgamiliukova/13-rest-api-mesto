@@ -1,4 +1,9 @@
 const jwt = require('jsonwebtoken');
+const {
+  celebrate,
+  Joi,
+  Segments,
+} = require('celebrate');
 
 const { UnauthorizedError } = require('../errors');
 
@@ -6,8 +11,21 @@ module.exports = (app) => {
   // required is to add signup/signin routes before authorization middleware
   const { users } = app.get('controllers');
 
-  app.post('/signup', users.createUser.bind(users));
-  app.post('/signin', users.login.bind(users));
+  app.post('/signup', celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+      name: Joi.string().required().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string().required().uri(),
+    }),
+  }), users.createUser.bind(users));
+  app.post('/signin', celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+    }),
+  }), users.login.bind(users));
 
   // eslint-disable-next-line consistent-return
   return (req, _, next) => {

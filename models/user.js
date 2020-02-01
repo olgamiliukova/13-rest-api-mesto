@@ -47,7 +47,7 @@ const userSchema = new Schema({
     type: String,
     validate: {
       validator(value) {
-        return validator.isUrl(value);
+        return validator.isURL(value);
       },
       message: (props) => `${props.value} is not a valid uri`,
     },

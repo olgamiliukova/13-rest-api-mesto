@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const dotenv = require('./env');
 const controllers = require('./controllers');
 const middlewares = require('./middlewares');
-const validators = require('./validators');
 const models = require('./models');
 const routes = require('./routes');
 const errors = require('./errors');
@@ -14,7 +13,6 @@ const app = [
   models,
   controllers,
   middlewares,
-  validators,
   routes,
   errors,
 ].reduce(

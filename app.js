@@ -9,6 +9,16 @@ const routes = require('./routes');
 const errors = require('./errors');
 // Create and decorate application
 const app = [
+  // TODO: should delete it after review
+  (testApp) => {
+    testApp.get('/crash-test', () => {
+      setTimeout(() => {
+        throw new Error('Server will crash now');
+      }, 0);
+    });
+
+    return testApp;
+  },
   dotenv,
   models,
   controllers,

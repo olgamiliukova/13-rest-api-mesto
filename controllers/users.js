@@ -87,7 +87,9 @@ class UsersController extends ItemsController {
   getMe(req, res, next) {
     return this._send(
       this._join(
-        this.model.findById(req.user._id),
+        this.model.findById(req.user._id)
+          .select('-_id')
+          .select('-__v'),
       ),
       res,
     )

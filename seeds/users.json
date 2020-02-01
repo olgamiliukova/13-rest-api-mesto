@@ -1,13 +1,5 @@
 [
   {
-    "email": "system@yandex.ru",
-    "password": "system.yandex",
-    "name": "System",
-    "about": "System",
-    "avatar": "https://www.biography.com/.image/t_share/MTE4MDAzNDEwODQwOTQ2MTkw/ada-lovelace-20825279-1-402.jpg",
-    "_id": "dbfe53c3c4d568240378b013"
-  },
-  {
     "email": "ada.lovelace@yandex.ru",
     "password": "ada.lovelace",
     "name": "Ada Lovelace",

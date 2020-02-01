@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-const validUrl = require('valid-url');
 const validator = require('validator');
 
 const { BadRequestError } = require('../errors');
@@ -48,7 +47,7 @@ const userSchema = new Schema({
     type: String,
     validate: {
       validator(value) {
-        return !!validUrl.isWebUri(value);
+        return validator.isUrl(value);
       },
       message: (props) => `${props.value} is not a valid uri`,
     },

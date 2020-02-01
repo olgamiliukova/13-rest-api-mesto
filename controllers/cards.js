@@ -18,14 +18,7 @@ class CardsController extends ItemsController {
 
     return this._join(this.model.findById(id))
       .then((card) => {
-        if (!card) {
-          return this._send(
-            Promise.resolve(card),
-            res,
-          );
-        }
-
-        if (!card.owner) {
+        if (!card || !card.owner) {
           throw new BadRequestError('Field owner is required');
         }
 
@@ -39,10 +32,12 @@ class CardsController extends ItemsController {
   }
 
   likeCard(req, res, next) {
+    const { id } = req.params;
+
     return this._send(
       this._join(
         this.model.findByIdAndUpdate(
-          req.params.id,
+          id,
           {
             $addToSet: {
               likes: req.user._id,
@@ -60,10 +55,12 @@ class CardsController extends ItemsController {
   }
 
   dislikeCard(req, res, next) {
+    const { id } = req.params;
+
     return this._send(
       this._join(
         this.model.findByIdAndUpdate(
-          req.params.id,
+          id,
           {
             $pull: {
               likes: req.user._id,

@@ -1,4 +1,6 @@
 // Errors
+const { errors } = require('celebrate');
+
 const { NotFoundError } = require('../errors');
 // Routes
 const cards = require('./cards');
@@ -10,6 +12,9 @@ module.exports = (app) => {
   app.use('/', (_, res, next) => {
     next(new NotFoundError('The requested resource is not found'));
   });
+
+  // Add validation errors middleware
+  app.use(errors());
 
   return app;
 };

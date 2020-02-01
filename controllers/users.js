@@ -85,11 +85,9 @@ class UsersController extends ItemsController {
   }
 
   getMe(req, res, next) {
-    const { _id } = req.user;
-
     return this._send(
       this._join(
-        this.model.findById(_id),
+        this.model.findById(req.user._id),
       ),
       res,
     )
@@ -97,12 +95,10 @@ class UsersController extends ItemsController {
   }
 
   updateMe(req, res, next) {
-    const { _id } = req.user;
-
     return this._send(
       this._join(
         this.model.findByIdAndUpdate(
-          _id,
+          req.user._id,
           this._data(req.body),
           {
             new: true,

@@ -33,7 +33,7 @@ module.exports = class ItemsController {
     return promise;
   }
 
-  getItems(req, res, next) {
+  getItems(_, res, next) {
     return this._send(
       this._join(
         this.model.find({}),

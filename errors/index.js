@@ -11,6 +11,7 @@ module.exports = (app) => {
     res
       .status(statusCode)
       .send({
+        statusCode,
         message: statusCode === InternalServerError.statusCode
           ? InternalServerError.message
           : message,

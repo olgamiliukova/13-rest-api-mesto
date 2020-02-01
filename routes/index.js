@@ -13,6 +13,8 @@ module.exports = (app) => {
     next(new NotFoundError('The requested resource is not found'));
   });
 
+  // Add error logger
+  app.use(app.get('logger.error'));
   // Add validation errors middleware
   app.use(errors());
 

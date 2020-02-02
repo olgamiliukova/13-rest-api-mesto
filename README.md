@@ -1,7 +1,7 @@
 # [Backend part of the "Mesto" project](https://api.mesto-olgamiliukova.ml)
 
 ## Description
-The package is a Yandex Praktikum project which contains the implementation of backend part of the [Mesto project](https://mesto-olgamiliukova.ml) - [https://api.mesto-olgamiliukova.ml](https://mesto-olgamiliukova.ml).
+The package is a Yandex Praktikum project which contains the implementation of backend part of the [Mesto project](https://mesto-olgamiliukova.ml) - [https://api.mesto-olgamiliukova.ml](https://api.mesto-olgamiliukova.ml).
 Use follow link for the frontend part [https://mesto-olgamiliukova.ml](https://mesto-olgamiliukova.ml). The backend part is available by link [https://api.mesto-olgamiliukova.ml](https://api.mesto-olgamiliukova.ml). Also there is development environment by addresses respectivly:
 - [https://dev.mesto-olgamiliukova.ml](https://dev.mesto-olgamiliukova.ml)
 - [https://dev.api.mesto-olgamiliukova.ml](https://dev.api.mesto-olgamiliukova.ml)

@@ -1,10 +1,14 @@
-// Errors
-const { errors } = require('celebrate');
+// Errors and Validation
+const { Joi, errors } = require('celebrate');
+const joiObjectId = require('joi-objectid');
 
 const { NotFoundError } = require('../errors');
 // Routes
 const cards = require('./cards');
 const users = require('./users');
+// Extends Joi
+Joi.objectId = joiObjectId(Joi);
+
 // Setup routes
 module.exports = (app) => {
   app.use('/cards', cards(app));

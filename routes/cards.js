@@ -13,7 +13,7 @@ module.exports = (app) => {
   // Get card by id
   router.get('/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
-      id: Joi.string().alphanum().length(24),
+      id: Joi.objectId(),
     }),
   }), cards.getItem.bind(cards));
   // Create new card
@@ -21,42 +21,34 @@ module.exports = (app) => {
     [Segments.BODY]: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
       link: Joi.string().required().uri(),
-      owner: Joi.string().alphanum().length(24),
-      likes: Joi.array().items(
-        Joi.string().alphanum().length(24),
-      ),
     }),
   }), cards.createCard.bind(cards));
   // Update card by id
   router.put('/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
-      id: Joi.string().alphanum().length(24),
+      id: Joi.objectId(),
     }),
     [Segments.BODY]: Joi.object().keys({
       name: Joi.string().min(2).max(30),
       link: Joi.string().uri(),
-      owner: Joi.string().alphanum().length(24),
-      likes: Joi.array().items(
-        Joi.string().alphanum().length(24),
-      ),
     }),
   }), cards.updateCard.bind(cards));
   // Delete card by id
   router.delete('/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
-      id: Joi.string().alphanum().length(24),
+      id: Joi.objectId(),
     }),
   }), cards.deleteCard.bind(cards));
   // Like card
   router.put('/:id/likes', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
-      id: Joi.string().alphanum().length(24),
+      id: Joi.objectId(),
     }),
   }), cards.likeCard.bind(cards));
   // Unlike card
   router.delete('/:id/likes', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
-      id: Joi.string().alphanum().length(24),
+      id: Joi.objectId(),
     }),
   }), cards.unlikeCard.bind(cards));
 

@@ -15,7 +15,7 @@ module.exports = (app) => {
   // Get user by id
   router.get('/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
-      id: Joi.string().alphanum().length(24),
+      id: Joi.objectId(),
     }),
   }), users.getItem.bind(users));
   // Create new user
@@ -41,7 +41,7 @@ module.exports = (app) => {
   // Update user by id
   router.put('/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
-      id: Joi.string().alphanum().length(24),
+      id: Joi.objectId(),
     }),
     [Segments.BODY]: Joi.object().keys({
       email: Joi.string().email(),
@@ -54,7 +54,7 @@ module.exports = (app) => {
   // Delete user by id
   router.delete('/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
-      id: Joi.string().alphanum().length(24),
+      id: Joi.objectId(),
     }),
   }), users.deleteUser.bind(users));
 

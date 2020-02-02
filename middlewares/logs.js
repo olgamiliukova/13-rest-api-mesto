@@ -2,11 +2,10 @@ const winston = require('winston');
 const expressWinston = require('express-winston');
 
 const createLogger = (filename, method = 'logger') => expressWinston[method]({
-  transports: [
+  transports: process.env.NODE_ENV === 'development' ? [
+    new winston.transports.Console(),
+  ] : [
     new winston.transports.File({ filename }),
-    ...(process.env.NODE_ENV === 'development' ? [
-      new winston.transports.Console(),
-    ] : []),
   ],
   format: winston.format.json(),
 });

@@ -47,8 +47,8 @@ class UsersController extends ItemsController {
 
     return this.model.exists({ email })
       .then(
-        (isExists) => {
-          if (isExists) {
+        (isExist) => {
+          if (isExist) {
             throw new BadRequestError(`User with email "${email}" already exists`);
           }
 
@@ -67,21 +67,53 @@ class UsersController extends ItemsController {
   updateUser(req, res, next) {
     const { id } = req.params;
 
-    if (req.user._id !== id) {
-      throw new ForbiddenError('Operation "Update" is not permitted');
-    }
+    // Check if user doesn't exist
+    return this.model.exists({ id })
+      .then(
+        (isExist) => {
+          if (!isExist) {
+            throw new BadRequestError('User doesn\'t exist to update');
+          }
 
-    return this.updateItem(req, res, next);
+          return this.model.findById(id)
+            .then(
+              (user) => {
+                if (!user.equals(req.user)) {
+                  throw new ForbiddenError('Operation "Update" is not permitted');
+                }
+
+                return this.updateItem(req, res, next);
+              },
+            );
+        },
+      )
+      .catch(next);
   }
 
   deleteUser(req, res, next) {
     const { id } = req.params;
 
-    if (req.user._id !== id) {
-      throw new ForbiddenError('Operation "Delete" is not permitted');
-    }
+    // Check if user doesn't exist
+    return this.model.exists({ id })
+      .then(
+        (isExist) => {
+          if (!isExist) {
+            throw new BadRequestError('User doesn\'t exist to delete');
+          }
 
-    return this.deleteItem(req, res, next);
+          return this.model.findById(id)
+            .then(
+              (user) => {
+                if (!user.equals(req.user)) {
+                  throw new ForbiddenError('Operation "Delete" is not permitted');
+                }
+
+                return this.deleteItem(req, res, next);
+              },
+            );
+        },
+      )
+      .catch(next);
   }
 
   getMe(req, res, next) {

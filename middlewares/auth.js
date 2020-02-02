@@ -5,7 +5,7 @@ const {
   Segments,
 } = require('celebrate');
 
-const { UnauthorizedError } = require('../errors');
+const { BadRequestError, UnauthorizedError } = require('../errors');
 
 module.exports = (app) => {
   // required is to add signup/signin routes before authorization middleware
@@ -50,6 +50,25 @@ module.exports = (app) => {
       throw new UnauthorizedError(e.message);
     }
 
-    next();
+    const { User } = app.get('models');
+
+    // Check if user doesn't exist
+    User.exists({ _id: req.user._id })
+      .then(
+        (isExist) => {
+          if (!isExist) {
+            throw new BadRequestError('User doesn\'t exist');
+          }
+
+          return User.findById(req.user._id)
+            .then(
+              (user) => {
+                req.user = user;
+                next();
+              },
+            );
+        },
+      )
+      .catch(next);
   };
 };

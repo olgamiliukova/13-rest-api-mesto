@@ -6,9 +6,7 @@ const {
 /* eslint-disable no-underscore-dangle */
 class CardsController extends ItemsController {
   createCard(req, res, next) {
-    req.body.owner = {
-      _id: req.user._id,
-    };
+    req.body.owner = req.user;
 
     return this.createItem(req, res, next);
   }
@@ -22,7 +20,7 @@ class CardsController extends ItemsController {
           throw new BadRequestError('Field owner is required');
         }
 
-        if (req.user._id !== card.owner._id) {
+        if (!card.owner.equals(req.user)) {
           throw new ForbiddenError('Operation "Update" is not permitted');
         }
 
@@ -40,7 +38,7 @@ class CardsController extends ItemsController {
           throw new BadRequestError('Field owner is required');
         }
 
-        if (req.user._id !== card.owner._id) {
+        if (!card.owner.equals(req.user)) {
           throw new ForbiddenError('Operation "Delete" is not permitted');
         }
 

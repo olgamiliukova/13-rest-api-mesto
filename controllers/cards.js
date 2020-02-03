@@ -1,95 +1,79 @@
 const ItemsController = require('./items');
 const {
-  BadRequestError,
+  NotFoundError,
   ForbiddenError,
 } = require('../errors');
 /* eslint-disable no-underscore-dangle */
 class CardsController extends ItemsController {
+  _check(req, action) {
+    const { id } = req.params;
+
+    return super._check(req, action)
+      .then(
+        () => this._join(
+          this.model.findById(id),
+        ),
+      )
+      .then(
+        (card) => {
+          if (!card.owner) {
+            throw new NotFoundError('Owner of the card has not been found');
+          }
+
+          if (!card.owner.equals(req.user)) {
+            throw new ForbiddenError(`Operation "${action}" is not permitted`);
+          }
+
+          return card;
+        },
+      );
+  }
+
   createCard(req, res, next) {
     req.body.owner = req.user;
 
     return this.createItem(req, res, next);
   }
 
-  updateCard(req, res, next) {
-    const { id } = req.params;
-
-    return this._join(this.model.findById(id))
-      .then((card) => {
-        if (!card || !card.owner) {
-          throw new BadRequestError('Field owner is required');
-        }
-
-        if (!card.owner.equals(req.user)) {
-          throw new ForbiddenError('Operation "Update" is not permitted');
-        }
-
-        return this.updateItem(req, res, next);
-      })
-      .catch(next);
-  }
-
-  deleteCard(req, res, next) {
-    const { id } = req.params;
-
-    return this._join(this.model.findById(id))
-      .then((card) => {
-        if (!card || !card.owner) {
-          throw new BadRequestError('Field owner is required');
-        }
-
-        if (!card.owner.equals(req.user)) {
-          throw new ForbiddenError('Operation "Delete" is not permitted');
-        }
-
-        return this.deleteItem(req, res, next);
-      })
-      .catch(next);
-  }
-
   likeCard(req, res, next) {
     const { id } = req.params;
 
-    return this._send(
-      this._join(
-        this.model.findByIdAndUpdate(
-          id,
-          {
-            $addToSet: {
-              likes: req.user._id,
-            },
+    return this._join(
+      this.model.findByIdAndUpdate(
+        id,
+        {
+          $addToSet: {
+            likes: req.user._id,
           },
-          {
-            new: true,
-            runValidators: true,
-          },
-        ),
+        },
+        {
+          new: true,
+          runValidators: true,
+        },
       ),
-      res,
     )
+      .then(this._send(res))
       .catch(next);
   }
 
   unlikeCard(req, res, next) {
     const { id } = req.params;
 
-    return this._send(
-      this._join(
-        this.model.findByIdAndUpdate(
-          id,
-          {
-            $pull: {
-              likes: req.user._id,
-            },
+    return this._join(
+      this.model.findByIdAndUpdate(
+        id,
+        {
+          $pull: {
+            likes: req.user._id,
           },
-          {
-            new: true,
-            runValidators: true,
-          },
-        ),
+        },
+        {
+          new: true,
+          runValidators: true,
+        },
       ),
-      res,
     )
+      .then(this._send(res))
       .catch(next);
   }
 }

@@ -32,13 +32,13 @@ module.exports = (app) => {
       name: Joi.string().min(2).max(30),
       link: Joi.string().uri(),
     }),
-  }), cards.updateCard.bind(cards));
+  }), cards.updateItem.bind(cards));
   // Delete card by id
   router.delete('/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       id: Joi.objectId(),
     }),
-  }), cards.deleteCard.bind(cards));
+  }), cards.deleteItem.bind(cards));
   // Like card
   router.put('/:id/likes', celebrate({
     [Segments.PARAMS]: Joi.object().keys({

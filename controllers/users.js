@@ -1,7 +1,4 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable arrow-body-style */
 const jwt = require('jsonwebtoken');
-const validator = require('validator');
 
 const ItemsController = require('./items');
 const {
@@ -10,12 +7,28 @@ const {
 } = require('../errors');
 /* eslint-disable no-underscore-dangle */
 class UsersController extends ItemsController {
+  _check(req, action) {
+    const { id } = req.params;
+
+    return super._check(req, action)
+      .then(
+        () => this._join(
+          this.model.findById(id),
+        ),
+      )
+      .then(
+        (user) => {
+          if (!user.equals(req.user)) {
+            throw new ForbiddenError(`Operation "${action}" is not permitted`);
+          }
+
+          return user;
+        },
+      );
+  }
+
   login(req, res, next) {
     const { email, password } = req.body;
-
-    if (!validator.isEmail(email)) {
-      throw new BadRequestError('Validation: Field email is not correct');
-    }
 
     return this.model.findUserByCredentials(email, password)
       .then((user) => {
@@ -26,7 +39,7 @@ class UsersController extends ItemsController {
           { expiresIn: JWT_EXPIRES_IN },
         );
 
-        res.set({
+        return res.set({
           authorization: `Bearer ${token}`,
         })
           .cookie('jwt', token, {
@@ -41,10 +54,6 @@ class UsersController extends ItemsController {
   createUser(req, res, next) {
     const { email } = this._data(req.body);
 
-    if (!email) {
-      throw new BadRequestError('Field email is required');
-    }
-
     return this.model.exists({ email })
       .then(
         (isExist) => {
@@ -52,96 +61,32 @@ class UsersController extends ItemsController {
             throw new BadRequestError(`User with email "${email}" already exists`);
           }
 
-          return this._send(
-            this.model.create(this._data(req.body))
-              .then(
-                ({ _id }) => this.model.findById(_id),
-              ),
-            res,
-          );
-        },
-      )
-      .catch(next);
-  }
-
-  updateUser(req, res, next) {
-    const { id } = req.params;
-
-    // Check if user doesn't exist
-    return this.model.exists({ id })
-      .then(
-        (isExist) => {
-          if (!isExist) {
-            throw new BadRequestError('User doesn\'t exist to update');
-          }
-
-          return this.model.findById(id)
-            .then(
-              (user) => {
-                if (!user.equals(req.user)) {
-                  throw new ForbiddenError('Operation "Update" is not permitted');
-                }
-
-                return this.updateItem(req, res, next);
-              },
-            );
-        },
-      )
-      .catch(next);
-  }
-
-  deleteUser(req, res, next) {
-    const { id } = req.params;
-
-    // Check if user doesn't exist
-    return this.model.exists({ id })
-      .then(
-        (isExist) => {
-          if (!isExist) {
-            throw new BadRequestError('User doesn\'t exist to delete');
-          }
-
-          return this.model.findById(id)
-            .then(
-              (user) => {
-                if (!user.equals(req.user)) {
-                  throw new ForbiddenError('Operation "Delete" is not permitted');
-                }
-
-                return this.deleteItem(req, res, next);
-              },
-            );
+          return this.createItem(req, res, next);
         },
       )
       .catch(next);
   }
 
   getMe(req, res, next) {
-    return this._send(
-      this._join(
-        this.model.findById(req.user._id)
-          .select('-_id')
-          .select('-__v'),
-      ),
-      res,
+    return this._join(
+      this.model.findById(req.user._id),
     )
+      .then(this._send(res))
       .catch(next);
   }
 
   updateMe(req, res, next) {
-    return this._send(
-      this._join(
-        this.model.findByIdAndUpdate(
-          req.user._id,
-          this._data(req.body),
-          {
-            new: true,
-            runValidators: true,
-          },
-        ),
+    return this._join(
+      this.model.findByIdAndUpdate(
+        req.user._id,
+        this._data(req.body),
+        {
+          new: true,
+          runValidators: true,
+        },
       ),
-      res,
     )
+      .then(this._send(res))
       .catch(next);
   }
 }

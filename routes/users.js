@@ -50,13 +50,13 @@ module.exports = (app) => {
       about: Joi.string().min(2).max(30),
       avatar: Joi.string().uri(),
     }),
-  }), users.updateUser.bind(users));
+  }), users.updateItem.bind(users));
   // Delete user by id
   router.delete('/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       id: Joi.objectId(),
     }),
-  }), users.deleteUser.bind(users));
+  }), users.deleteItem.bind(users));
 
   return router;
 };

@@ -7,9 +7,10 @@ module.exports = class ItemsController {
   }
 
   _data(data) {
-    return Object.keys(this.model.schema.obj).reduce((obj, key) => {
-      return key in data ? { ...obj, [key]: data[key] } : obj;
-    }, {});
+    return Object.keys(this.model.schema.obj).reduce(
+      (obj, key) => (key in data ? { ...obj, [key]: data[key] } : obj),
+      {},
+    );
   }
 
   _join(promise) {

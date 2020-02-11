@@ -1,94 +1,80 @@
 const ItemsController = require('./items');
-const { errors } = require('../helpers');
+const {
+  NotFoundError,
+  ForbiddenError,
+} = require('../errors');
 /* eslint-disable no-underscore-dangle */
 class CardsController extends ItemsController {
-  createCard(req, res) {
-    req.body.owner = {
-      _id: req.user._id,
-    };
-
-    return this.createItem(req, res);
-  }
-
-  deleteCard(req, res) {
+  _check(req, action) {
     const { id } = req.params;
 
-    return this._join(this.model.findById(id))
-      .then((card) => {
-        if (!card) {
-          return this._send(
-            Promise.resolve(card),
-            res,
-          );
-        }
+    return super._check(req, action)
+      .then(
+        () => this._join(
+          this.model.findById(id),
+        ),
+      )
+      .then(
+        (card) => {
+          if (!card.owner) {
+            throw new NotFoundError('Owner of the card has not been found');
+          }
 
-        if (!card.owner) {
-          return this._send(
-            Promise.reject(
-              res.status(400).send({
-                message: 'Field owner is required',
-              }),
-            ),
-            res,
-          );
-        }
+          if (!card.owner.equals(req.user)) {
+            throw new ForbiddenError(`Operation "${action}" is not permitted`);
+          }
 
-        if (req.user._id !== card.owner._id) {
-          return this._send(
-            Promise.reject(
-              res.status(403).send({
-                message: 'Operation "Delete" is not permitted',
-              }),
-            ),
-            res,
-          );
-        }
-
-        return this.deleteItem(req, res);
-      })
-      .catch(
-        (err) => errors(err, res),
+          return card;
+        },
       );
   }
 
-  likeCard(req, res) {
-    return this._send(
-      this._join(
-        this.model.findByIdAndUpdate(
-          req.params.id,
-          {
-            $addToSet: {
-              likes: req.user._id,
-            },
-          },
-          {
-            new: true,
-            runValidators: true,
-          },
-        ),
-      ),
-      res,
-    );
+  createCard(req, res, next) {
+    req.body.owner = req.user;
+
+    return this.createItem(req, res, next);
   }
 
-  dislikeCard(req, res) {
-    return this._send(
-      this._join(
-        this.model.findByIdAndUpdate(
-          req.params.id,
-          {
-            $pull: {
-              likes: req.user._id,
-            },
+  likeCard(req, res, next) {
+    const { id } = req.params;
+
+    return this._join(
+      this.model.findByIdAndUpdate(
+        id,
+        {
+          $addToSet: {
+            likes: req.user._id,
           },
-          {
-            new: true,
-            runValidators: true,
-          },
-        ),
+        },
+        {
+          new: true,
+          runValidators: true,
+        },
       ),
-      res,
-    );
+    )
+      .then(this._send(res))
+      .catch(next);
+  }
+
+  unlikeCard(req, res, next) {
+    const { id } = req.params;
+
+    return this._join(
+      this.model.findByIdAndUpdate(
+        id,
+        {
+          $pull: {
+            likes: req.user._id,
+          },
+        },
+        {
+          new: true,
+          runValidators: true,
+        },
+      ),
+    )
+      .then(this._send(res))
+      .catch(next);
   }
 }
 

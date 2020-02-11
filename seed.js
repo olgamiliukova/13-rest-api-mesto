@@ -5,11 +5,13 @@ const dotenv = require('./env');
 const models = require('./models');
 const seeds = require('./seeds');
 
-// Create and extend application
-const app = models(
-  dotenv(
-    express(),
-  ),
+// Create and decorate application
+const app = [
+  dotenv,
+  models,
+].reduce(
+  (decorated, decorator) => decorator(decorated),
+  express(),
 );
 
 const {

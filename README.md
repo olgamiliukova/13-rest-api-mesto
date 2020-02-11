@@ -1,7 +1,10 @@
-# [13-rest-api-mesto](https://olgamiliukova.github.io/13-rest-api-mesto/)
+# [Backend part of the "Mesto" project](https://api.mesto-olgamiliukova.ml)
 
 ## Description
-The package is a Yandex Praktikum project which contains the implementation of backend part of the [Mesto project](https://olgamiliukova.github.io/11-web-app-infrastructure/)
+The package is a Yandex Praktikum project which contains the implementation of backend part of the [Mesto project](https://mesto-olgamiliukova.ml) - [https://api.mesto-olgamiliukova.ml](https://api.mesto-olgamiliukova.ml).
+Use follow link for the frontend part [https://mesto-olgamiliukova.ml](https://mesto-olgamiliukova.ml). The backend part is available by link [https://api.mesto-olgamiliukova.ml](https://api.mesto-olgamiliukova.ml). Also there is development environment by addresses respectivly:
+- [https://dev.mesto-olgamiliukova.ml](https://dev.mesto-olgamiliukova.ml)
+- [https://dev.api.mesto-olgamiliukova.ml](https://dev.api.mesto-olgamiliukova.ml)
 
 The latest release [https://github.com/olgamiliukova/13-rest-api-mesto/releases/latest](https://github.com/olgamiliukova/13-rest-api-mesto/releases/latest)
 

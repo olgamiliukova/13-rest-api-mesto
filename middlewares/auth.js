@@ -1,23 +1,41 @@
 const jwt = require('jsonwebtoken');
+const {
+  celebrate,
+  Joi,
+  Segments,
+} = require('celebrate');
+
+const { ForbiddenError, UnauthorizedError } = require('../errors');
 
 module.exports = (app) => {
   // required is to add signup/signin routes before authorization middleware
   const { users } = app.get('controllers');
 
-  app.post('/signup', users.createUser.bind(users));
-  app.post('/signin', users.login.bind(users));
+  app.post('/signup', celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+      name: Joi.string().required().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string().required().uri(),
+    }),
+  }), users.createUser.bind(users));
+  app.post('/signin', celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+    }),
+  }), users.login.bind(users));
 
   // eslint-disable-next-line consistent-return
-  return (req, res, next) => {
+  return (req, _, next) => {
     let { authorization } = req.headers;
 
     if (!authorization || !authorization.startsWith('Bearer ')) {
       const { jwt: token } = req.cookies;
 
       if (!token) {
-        return res
-          .status(401)
-          .send({ message: 'Authorization is required' });
+        throw new UnauthorizedError();
       }
 
       authorization = token;
@@ -28,12 +46,29 @@ module.exports = (app) => {
 
     try {
       req.user = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
-    } catch (err) {
-      return res
-        .status(401)
-        .send({ message: 'Authorization is required' });
+    } catch (e) {
+      throw new UnauthorizedError(e.message);
     }
 
-    next();
+    const { User } = app.get('models');
+
+    // Check if user doesn't exist
+    User.exists({ _id: req.user._id })
+      .then(
+        (isExist) => {
+          if (!isExist) {
+            throw new ForbiddenError('User has not been found to authorize');
+          }
+
+          return User.findById(req.user._id)
+            .then(
+              (user) => {
+                req.user = user;
+                next();
+              },
+            );
+        },
+      )
+      .catch(next);
   };
 };

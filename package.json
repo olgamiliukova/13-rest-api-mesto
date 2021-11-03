@@ -35,7 +35,7 @@
     "mongoose": "^5.8.1",
     "mongoose-seed": "^0.6.0",
     "valid-url": "^1.0.9",
-    "validator": "^12.1.0",
+    "validator": "^13.7.0",
     "winston": "^3.2.1"
   }
 }
